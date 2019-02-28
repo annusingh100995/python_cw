@@ -1,17 +1,25 @@
 class Current:
       def constant_current(self):
             print("Enter the magnitude of current ")
-            self.current=input()
-            return self.current
+            self.current= float(input())
+
+            if not isinstance(self.current,float):
+                raise TypeError("NOT A NUMBER")
+            else:
+                return self.current
 
       def step_current(self):
             print("Enter the magnitude of current")
-            self.current=input()
-            return self.current
+            self.current=float(input())
+            if not isinstance(self.current,float):
+                raise TypeError("NOT A NUMBER")
+            else:
+                return self.current
+
       def time_step(self):
             print("Enter the time step")
             self.time_step = input()
-            return self.current
+            return self.time_step
 
 
 def main():
