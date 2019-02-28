@@ -112,6 +112,29 @@ def plot_current_density(Time,Current):
     fig = plt.grid()
     return fig
 
+def plot_neuron_potential(Time,Voltage):
+    Vy = odeint(compute_derivatives, Voltage, Time)
+
+    fig, ax = plt.subplots(figsize=(12, 7))
+    ax.plot(T, Vy[:, 0])
+    ax.set_xlabel('Time (ms)')
+    ax.set_ylabel('Vm (mV)')
+    ax.set_title('Neuron potential with two spikes')
+    fig = plt.grid()
+    return fig
+
+def Plot_Trajectories(Y,Time):
+
+    Vy = odeint(compute_derivatives, Y, Time)
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.plot(Vy[:, 0], Vy[:, 1], label='Vm - n')
+    ax.plot(Vy[:, 0], Vy[:, 2], label='Vm - m')
+    ax.set_title('Limit cycles')
+    ax.legend()
+    fig = plt.grid()
+    return fig
+
+
 def main():
     #pdf = matplotlib.backends.backend_pdf.PdfPages(out_pdf)
     #figs = plt.figure()
@@ -121,39 +144,14 @@ def main():
 
     # Solve ODE system
     # Vy = (Vm[t0:tmax], n[t0:tmax], m[t0:tmax], h[t0:tmax])
-    Vy = odeint(compute_derivatives, Y, T)
-
+    #Vy = odeint(compute_derivatives, Y, T)
 
     Idv = [Id(t) for t in T]
 
-    fig, ax = plt.subplots(figsize=(12, 7))
-
-    ax.plot(T, Idv)
-    ax.set_xlabel('Time (ms)')
-    ax.set_ylabel(r'Current density (uA/$cm^2$)')
-    ax.set_title('Stimulus (Current density)')
-    plt.grid()
-    #plt.show()
-
-    # N euron potential
-    fig, ax = plt.subplots(figsize=(12, 7))
-    ax.plot(T, Vy[:, 0])
-    ax.set_xlabel('Time (ms)')
-    ax.set_ylabel('Vm (mV)')
-    ax.set_title('Neuron potential with two spikes')
-    plt.grid()
-    #plt.show()
-
-    # Trajectories with limit cycles
-    fig, ax = plt.subplots(figsize=(10, 10))
-    ax.plot(Vy[:, 0], Vy[:, 1], label='Vm - n')
-    ax.plot(Vy[:, 0], Vy[:, 2], label='Vm - m')
-    ax.set_title('Limit cycles')
-    ax.legend()
-    plt.grid()
 
     plot_current_density(T, Idv)
-
+    plot_neuron_potential(T,Y)
+    Plot_Trajectories(Y,T)
     plt.show()
 
 
