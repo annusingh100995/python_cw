@@ -69,9 +69,19 @@ def h_inf(Vm=0.0):
 
 # Input stimulus
 def Id(t):
-    if 0.0 < t < 1.0:
+    if 0.0 < t < 10.0:
         return 150.0
-    elif 10.0 < t < 11.0:
+    elif 10.0 < t < 20.0:
+        return 50.0
+    elif 20.0 < t < 30.0:
+        return 0.0
+    elif 30.0 < t < 40.0:
+        return 50.0
+    elif 40.0 < t < 50.0:
+        return 0.0
+    elif 50.0 < t < 60.0:
+        return 0.0
+    elif 60.0 < t < 70.0:
         return 50.0
     return 0.0
 
@@ -147,7 +157,6 @@ def main():
     #Vy = odeint(compute_derivatives, Y, T)
 
     Idv = [Id(t) for t in T]
-
 
     plot_current_density(T, Idv)
     plot_neuron_potential(T,Y)
