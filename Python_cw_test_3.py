@@ -34,6 +34,40 @@ Vl = 10.613
 # Time values
 T = np.linspace(tmin, tmax, 10000)
 
+
+class Current:
+    def Constant_current(t):
+        print("Enter the magnitude of current ")
+        input_current = float(input())
+        if not isinstance(input_current, float):
+            raise TypeError("NOT A NUMBER")
+        else:
+            current = np.zeros(len(T))
+            current_length = len(current)
+            for t in range(1,current_length):
+                temp = int(t)
+                current[temp] = input_current
+                return current
+
+    def time_step(self):
+        print("Enter the time step")
+        self.time_step = input()
+        return self.time_step
+
+    def Step_current(t):
+        current = np.zeros(len(T))
+        current_length = len(current)
+        window_size = self.time_step
+        number_of_windows = int((current_length/window_size))
+        updated_current = current
+        number_list = np.arange(1, number_of_windows, 2)
+        for i in number_list:
+            for j in range(1, window_size):
+                temp = int(((i * window_size) + j))
+                updated_current[temp] = 10
+                return updated_current
+
+
 # Potassium ion-channel rate functions
 
 def alpha_n(Vm):
@@ -67,24 +101,6 @@ def m_inf(Vm=0.0):
 def h_inf(Vm=0.0):
     return alpha_h(Vm) / (alpha_h(Vm) + beta_h(Vm))
 
-# Input stimulus
-def Test_current(t):
-    if 0.0 < t < 10.0:
-        return 150.0
-    elif 10.0 < t < 20.0:
-        return 50.0
-    elif 20.0 < t < 30.0:
-        return 0.0
-    elif 30.0 < t < 40.0:
-        return 50.0
-    elif 40.0 < t < 50.0:
-        return 0.0
-    elif 50.0 < t < 60.0:
-        return 0.0
-    elif 60.0 < t < 70.0:
-        return 50.0
-    return 0.0
-
 # Compute derivatives
 def compute_derivatives(y, t0):
     dy = np.zeros((4,))
@@ -99,7 +115,7 @@ def compute_derivatives(y, t0):
     GNa = (gNa / Cm) * np.power(m, 3.0) * h
     GL = gL / Cm
 
-    dy[0] = (Test_current(t0) / Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
+    dy[0] = (Id(t0) / Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
 
     # dn/dt
     dy[1] = (alpha_n(Vm) * (1.0 - n)) - (beta_n(Vm) * n)
@@ -146,6 +162,25 @@ def Plot_Trajectories(Y,Time):
 
 
 def main():
+    current = Current()
+    input_current = 0
+    time_step = 0
+
+    print(""" ======CURRENT MENU=======
+                      1. Constant Current
+                      2. Step Current
+                      """)
+    choice = int(input("Enter Choice:"))
+    if choice == 1:
+        Id = current.Constant_current()
+    elif choice == 2:
+        Id = current.Step_current()
+        time_step = current.time_step()
+    else:
+        print("ERROR:INVALID CURRENT")
+        sys.exit()
+    print(input_current)
+    print(time_step)
     #pdf = matplotlib.backends.backend_pdf.PdfPages(out_pdf)
     #figs = plt.figure()
 
@@ -156,7 +191,7 @@ def main():
     # Vy = (Vm[t0:tmax], n[t0:tmax], m[t0:tmax], h[t0:tmax])
     #Vy = odeint(compute_derivatives, Y, T)
 
-    Idv = [Test_current(t) for t in T]
+    Idv = [Id(t) for t in T]
 
     plot_current_density(T, Idv)
     plot_neuron_potential(T,Y)

@@ -8,7 +8,7 @@ class Current:
             else:
                 return self.current
 
-      def step_current(self):
+      def step_current(t):
             print("Enter the magnitude of current")
             self.current=float(input())
             if not isinstance(self.current,float):
@@ -21,7 +21,7 @@ class Current:
             self.time_step = input()
             return self.time_step
 
-      def Step_current(self):
+      def Step_current(t):
           current = np.zeros(len(T))
           current_length = len(current)
           window_size = self.time_step
