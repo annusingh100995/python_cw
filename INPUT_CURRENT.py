@@ -32,6 +32,7 @@ class Current:
               for j in range(1,window_size):
                   temp = int(((i*window_size)+j))
                   updated_current[temp] = 10
+                  return updated_current
 
 
 
