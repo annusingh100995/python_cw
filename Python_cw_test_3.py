@@ -54,7 +54,7 @@ class Current:
         self.time_step = input()
         return self.time_step
 
-    def Step_current(t):
+    def Step_current(self):
         current = np.zeros(len(T))
         current_length = len(current)
         window_size = self.time_step
@@ -66,6 +66,14 @@ class Current:
                 temp = int(((i * window_size) + j))
                 updated_current[temp] = 10
                 return updated_current
+
+    def CC(t):
+        for t in T:
+            return current[t]
+
+    def SC(t):
+        for t in T:
+            return Ste[t]
 
 
 # Potassium ion-channel rate functions
