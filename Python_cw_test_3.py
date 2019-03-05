@@ -42,12 +42,9 @@ class Current:
         if not isinstance(input_current, float):
             raise TypeError("NOT A NUMBER")
         else:
-            current = np.zeros(len(T))
-            current_length = len(current)
-            for t in range(1,current_length):
-                temp = int(t)
-                current[temp] = input_current
-                return current
+           if tmin < t < tmax
+               return input_current
+
 
     def time_step(self):
         print("Enter the time step")
@@ -65,16 +62,18 @@ class Current:
             for j in range(1, window_size):
                 temp = int(((i * window_size) + j))
                 updated_current[temp] = 10
-                return updated_current
 
-    def CC(t):
         for t in T:
-            return current[t]
+            return updated_current(T[t])
 
-    def SC(t):
-        for t in T:
-            return Ste[t]
 
+   # def CC(t):
+   #     for t in T:
+    #        return current[t]
+
+   # def SC(t):
+    #    for t in T:
+    #        return updated_current[t]
 
 # Potassium ion-channel rate functions
 
@@ -171,7 +170,7 @@ def Plot_Trajectories(Y,Time):
 
 def main():
     current = Current()
-    input_current = 0
+    input_current = []
     time_step = 0
 
     print(""" ======CURRENT MENU=======
@@ -180,9 +179,9 @@ def main():
                       """)
     choice = int(input("Enter Choice:"))
     if choice == 1:
-        Id = current.Constant_current()
+        input_current = current.Constant_current()
     elif choice == 2:
-        Id = current.Step_current()
+        input_current = current.Step_current()
         time_step = current.time_step()
     else:
         print("ERROR:INVALID CURRENT")
@@ -201,7 +200,7 @@ def main():
 
     Idv = [Id(t) for t in T]
 
-    plot_current_density(T, Idv)
+    plot_current_density(T,Idv)
     plot_neuron_potential(T,Y)
     Plot_Trajectories(Y,T)
     plt.show()
