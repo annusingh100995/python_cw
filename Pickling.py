@@ -37,7 +37,7 @@ class Current:
             return updated_current(t)
 
 
-    def Constant_current(t):
-        current = []
-        for t in T:
-            return current[t] = 12
+    def CC(t):
+        if tmin < t < tmax:
+            return 15
+ idv = [CC(t) for t in T]
