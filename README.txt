@@ -2,6 +2,8 @@
 
 CSC8311- Advanced Python Programming 
 
+**CSC8311_Final_Submission.Py ** Is My Final Submission. 
+
 I tried to model Hodgkin Huxley equations. The Hodgkin Huxley model is a set of equations that models the potential of single neuron. The basic idea is that, the neuron is stimulated with a simulation current provided by the user and the resulting action potential is measured with respect to time.
 
 The simulation current is time dependent.It can be constant or varying in step function.
