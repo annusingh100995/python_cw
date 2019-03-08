@@ -16,7 +16,12 @@ The program as of now, plots the simulation current with respect to time, the ac
 
 The user can edit the code and change the magnitude of the step and constant current according to their experiment.
 
+The program has two methods for calcutating the solving the differential equations and based on the user input , the program selects the either the constant current system or the step curernt system. 
+
+
 I have included the version control file in the folder.
+
+
 
 I tried to generalise my code, so that the user can select the type of current for simulation (constant/step) and then input the magnitude of current .I did try implement this,but was not able to debug the code and make the functions compatible with each other and the ode function.
 
@@ -50,18 +55,23 @@ class Current:
 
 
 
-In the following piece of code, I tried to make a method that will return an array of current values. I made the code work to give me a step current. But was not able to adjust it according to the ode funcion.
+In the following piece of code, I tried to make a method that will return an array of current values. I made the code work to give me a step current. But was not able to make it compatible with the ode funcion.
 
-
-
+In this piece fo code,
+1. I divide the simulation time in number of windows , given a user defined time step.
+2. Take all the odd numbered windows and set them to the current magnitude (given by user) to give  me an array with alternative/step current.
+3. I take the odd numbered window, (which is of size = window size) and set every element of the window to be equal to the current givenby yser.
 
       def Step_current(self):
 	  current_magnitude = current.step_current
           current = np.zeros(len(T))
           current_length = len(current)
-          window_size = self.time_step
+
+		
+          window_size = current.time_step
           number_of_windows = current_length/window_size
           updated_current = current
+		# number list stores the odd numbered window
           number_list = np.arange(1,number_of_windows,2)
           for i in number_list:
               for j in range(1,window_size):
