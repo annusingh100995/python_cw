@@ -3,7 +3,6 @@ import tkinter
 import scipy
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
-import pdb
 
 np.random.seed(1000)
 
@@ -79,7 +78,7 @@ def m_inf(Vm=0.0):
 def h_inf(Vm=0.0):
     return alpha_h(Vm) / (alpha_h(Vm) + beta_h(Vm))
 
-def compute_derivatives(y, time):
+def compute_derivatives(y, current):
 
     dy = np.zeros((4,))
 
@@ -96,7 +95,7 @@ def compute_derivatives(y, time):
    # Current_type = Current_type()
 
     #if Current_type == 1:
-    dy[0] = (current(time)/ Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
+    dy[0] = (current/ Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
 
    # elif Current_type == 2:
         #dy[0] = (Step_current(t0) / Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
@@ -164,7 +163,7 @@ def main():
 
     stimulation_current = current.Current_Magnitude()
 
-    for t in range(0,(len(T)-1)):
+    for i in range(0,(len(T)-1)):
         stimulation_current_vec[i] = stimulation_current
 
 
@@ -174,7 +173,7 @@ def main():
 
     plot_current_density(T,stimulation_current_vec)
     plot_neuron_potential(stimulation_current_vec,Y)
-    #Plot_Trajectories(stimulation_current_vec,Y)
+    Plot_Trajectories(stimulation_current_vec,Y)
     plt.show()
 
 

@@ -58,7 +58,7 @@ class Current:
 
 def Constant_currnet(t):
 
-    return 12
+    return 55
 
 def Step_current(t):
     if 0.0 < t < 10.0:

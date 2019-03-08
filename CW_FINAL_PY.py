@@ -3,7 +3,6 @@ import tkinter
 import scipy
 from scipy.integrate import odeint
 import matplotlib.pyplot as plt
-import pdb
 
 np.random.seed(1000)
 
@@ -35,17 +34,48 @@ Vl = 10.613
 # Time values
 T = np.linspace(tmin, tmax, 10000)
 
+
+
 class Current:
 
     def Current_Magnitude(self):
         print("Enter the magnitude of current ")
         current_mag = float(input())
-        current_vector = 0
+
 
         if not isinstance(current_mag,float):
             raise TypeError("NOT A NUMBER")
         else:
             return current_mag
+
+    def Time_step(self):
+        print("Enter the time step")
+        time_step = float(input())
+        if not isinstance(time_step,float):
+            raise TypeError("NOT A NUMBER")
+        else:
+            return time_step
+
+def Constant_currnet(t):
+
+    return 55
+
+def Step_current(t):
+    if 0.0 < t < 10.0:
+        return 0.0
+    elif 10.0 < t < 20.0:
+        return 150.0
+    elif 20.0 < t < 30.0:
+        return 0.0
+    elif 30.0 < t < 40.0:
+        return 150.0
+    elif 40.0 < t < 50.0:
+        return 0.0
+    elif 50.0 < t < 60.0:
+        return 50.0
+    elif 60.0 < t < 70.0:
+        return 50.0
+    return 0.0
 
 
 def alpha_n(Vm):
@@ -79,7 +109,10 @@ def m_inf(Vm=0.0):
 def h_inf(Vm=0.0):
     return alpha_h(Vm) / (alpha_h(Vm) + beta_h(Vm))
 
-def compute_derivatives(y, time):
+
+
+# Compute derivatives
+def compute_derivatives(y, t0):
 
     dy = np.zeros((4,))
 
@@ -96,7 +129,7 @@ def compute_derivatives(y, time):
    # Current_type = Current_type()
 
     #if Current_type == 1:
-    dy[0] = (current(time)/ Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
+    dy[0] = (Constant_currnet(t0)/ Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
 
    # elif Current_type == 2:
         #dy[0] = (Step_current(t0) / Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
@@ -113,6 +146,38 @@ def compute_derivatives(y, time):
     return dy
 
 
+def compute_derivatives_step(y, t0):
+    dy = np.zeros((4,))
+
+    Vm = y[0]
+    n = y[1]
+    m = y[2]
+    h = y[3]
+
+    # dVm/dt
+    GK = (gK / Cm) * np.power(n, 4.0)
+    GNa = (gNa / Cm) * np.power(m, 3.0) * h
+    GL = gL / Cm
+
+    # Current_type = Current_type()
+
+    # if Current_type == 1:
+    dy[0] = (Step_current(t0) / Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
+
+    # elif Current_type == 2:
+    # dy[0] = (Step_current(t0) / Cm) - (GK * (Vm - VK)) - (GNa * (Vm - VNa)) - (GL * (Vm - Vl))
+
+    # dn/dt
+    dy[1] = (alpha_n(Vm) * (1.0 - n)) - (beta_n(Vm) * n)
+
+    # dm/dt
+    dy[2] = (alpha_m(Vm) * (1.0 - m)) - (beta_m(Vm) * m)
+
+    # dh/dt
+    dy[3] = (alpha_h(Vm) * (1.0 - h)) - (beta_h(Vm) * h)
+
+    return dy
+
 def plot_current_density(Time,Current):
     fig, ax = plt.subplots(figsize=(12, 7))
 
@@ -123,8 +188,14 @@ def plot_current_density(Time,Current):
     fig = plt.grid()
     return fig
 
-def plot_neuron_potential(CURRENT,Voltage):
-    Vy = odeint(compute_derivatives, Voltage, CURRENT)
+def plot_neuron_potential(Time,Voltage,Current_type):
+
+    test = Current_type
+    if test == 1:
+        Vy = odeint(compute_derivatives, Voltage, Time)
+    else:
+        Vy = odeint(compute_derivatives_step, Voltage, Time)
+
 
     fig, ax = plt.subplots(figsize=(12, 7))
     ax.plot(T, Vy[:, 0])
@@ -134,9 +205,15 @@ def plot_neuron_potential(CURRENT,Voltage):
     fig = plt.grid()
     return fig
 
-def Plot_Trajectories(Y,CURRENT):
+def Plot_Trajectories(Y,Time,Current_type):
 
-    Vy = odeint(compute_derivatives, Y, CURRENT)
+    test = Current_type
+    if test == 1:
+        Vy = odeint(compute_derivatives, Y, Time)
+    else:
+        Vy = odeint(compute_derivatives_step,Y, Time)
+
+    Vy = odeint(compute_derivatives, Y, Time)
     fig, ax = plt.subplots(figsize=(10, 10))
     ax.plot(Vy[:, 0], Vy[:, 1], label='Vm - n')
     ax.plot(Vy[:, 0], Vy[:, 2], label='Vm - m')
@@ -145,13 +222,33 @@ def Plot_Trajectories(Y,CURRENT):
     fig = plt.grid()
     return fig
 
+
 def main():
     current = Current()
-    input_current = 0
+    Simulation_current = []
     time_step = 0
-    stimulation_current = 0
-    stimulation_current_vec = np.empty(len(T))
+    current_mag = 0
+    Current_type = 0
+    print(""" ======CURRENT MENU=======
+                      1. Constant Current 
+                      2. Step Current
+                      """)
+    choice = int(input("Enter Choice:"))
+    if choice == 1:
+        current_mag = current.Current_Magnitude()
 
+        Simulation_current = [Constant_currnet(t) for t in T]
+        Current_type = 1
+    elif choice == 2:
+        Simulation_current = [Step_current(t) for t in T]
+        time_step = current.Time_step()
+        Current_type = 2
+        current_mag = current.Current_Magnitude()
+    else:
+        print("ERROR:INVALID CURRENT")
+        sys.exit()
+    #print(input_current)
+    #print(time_step)
     #pdf = matplotlib.backends.backend_pdf.PdfPages(out_pdf)
     #figs = plt.figure()
 
@@ -162,20 +259,14 @@ def main():
     # Vy = (Vm[t0:tmax], n[t0:tmax], m[t0:tmax], h[t0:tmax])
     #Vy = odeint(compute_derivatives, Y, T)
 
-    stimulation_current = current.Current_Magnitude()
-
-    for t in range(0,(len(T)-1)):
-        stimulation_current_vec[i] = stimulation_current
+    #Idv = [Id(t) for t in T]
 
 
-    print(type(stimulation_current))
-    print(len(stimulation_current_vec))
-    print(len(T))
-
-    plot_current_density(T,stimulation_current_vec)
-    plot_neuron_potential(stimulation_current_vec,Y)
-    #Plot_Trajectories(stimulation_current_vec,Y)
+    plot_current_density(T,Simulation_current)
+    plot_neuron_potential(T,Y,Current_type)
+    Plot_Trajectories(Y,T,Current_type)
     plt.show()
 
 
 main()
+
